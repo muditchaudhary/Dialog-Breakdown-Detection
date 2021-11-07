@@ -1,6 +1,7 @@
 import torch
 import glob
 import json
+from tqdm import tqdm
 
 
 label2idx = {
@@ -9,10 +10,12 @@ label2idx = {
     "O":2
 }
 
-class DBDCDataset(torch.utils.Data.Dataset):
+class DBDCDataset(torch.utils.data.Dataset):
 
     def __init__(self, datapath, tokenizer, history_context = 0, max_length = 512):
         self.tokenizer = tokenizer
+        self.datapath = datapath
+        self.history_context = history_context
         self.dialog = []
         self.labels = []
         self.prepare_data()
@@ -27,10 +30,11 @@ class DBDCDataset(torch.utils.Data.Dataset):
         return len(self.labels)
 
     def prepare_data(self):
+
+        print("Preparing data")
         training_files = glob.glob(self.datapath + "/*")
 
-        for training_file in training_files[:1]:
-            print(training_file)
+        for _, training_file in enumerate(tqdm(training_files)):
             data = json.load(open(training_file))
             turns = data["turns"]
 

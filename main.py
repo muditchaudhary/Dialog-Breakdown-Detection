@@ -14,9 +14,6 @@ logging.basicConfig(
 )
 
 
-
-trainer = Trainer(...)
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', dest='training_data_path', action='store', required=True)
@@ -27,7 +24,7 @@ if __name__ == "__main__":
     training_data_path = args.training_data_path
     model_name = args.model
 
-    model = BertForSequenceClassification.from_pretrained(model_name, num_labels=3).to("cuda")
+    model = BertForSequenceClassification.from_pretrained(model_name, num_labels=3).to('cuda')
 
     tokenizer = BertTokenizerFast.from_pretrained(model_name, do_lower_case=False)
 
@@ -40,7 +37,6 @@ if __name__ == "__main__":
         warmup_steps=500,  # number of warmup steps for learning rate scheduler
         weight_decay=0.01,  # strength of weight decay
         logging_dir='./logs',  # directory for storing logs
-        load_best_model_at_end=True,  # load the best model when finished training (default metric is loss)
         logging_steps=200,  # log & save weights each logging_steps
     )
 
@@ -55,3 +51,5 @@ if __name__ == "__main__":
     )
 
     trainer.train()
+
+    model.save_pretrained("./saved_models")
