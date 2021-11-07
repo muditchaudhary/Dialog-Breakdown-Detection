@@ -1,7 +1,7 @@
 import torch
 import glob
 import json
-from transformers import BertTokenizerFast, BertForSequenceClassification
+
 
 label2idx = {
     "X":0,
