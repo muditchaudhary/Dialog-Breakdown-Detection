@@ -49,7 +49,7 @@ class DBDCDataset(torch.utils.data.Dataset):
                     dialog_history = all_turn_utterances[i - (self.history_context if self.history_context < i else i):i]
                     dialog_history = " ".join(dialog_history)
                     if (self.history_context > 0):
-                        dialog = dialog_history + "[SEP]" + current_dialog
+                        dialog = dialog_history + " [SEP] " + current_dialog
                     else:
                         dialog = current_dialog
                     self.dialog.append(dialog)
