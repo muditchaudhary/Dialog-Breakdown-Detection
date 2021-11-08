@@ -18,7 +18,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('-t', dest='training_data_path', action='store', required=True)
     parser.add_argument('-m', dest='model', action='store', required=True)
-    parser.add_argument('-e', dest='epochs', action='store', default = 1, required=False)
+    parser.add_argument('-o', dest='saved_model_path', required=True)
+    parser.add_argument('-e', dest='epochs', action='store', default = 1, type=int, required=False)
+    parser.add_argument('-c', dest='history_context', action='store', default = 0,type=int, required=False)
     args = parser.parse_args()
 
     training_data_path = args.training_data_path
@@ -28,7 +30,7 @@ if __name__ == "__main__":
 
     tokenizer = BertTokenizerFast.from_pretrained(model_name, do_lower_case=False)
 
-    train_dataset = DBDCDataset(training_data_path, tokenizer)
+    train_dataset = DBDCDataset(training_data_path, tokenizer, history_context=args.history_context)
 
     training_args = TrainingArguments(
         output_dir='./results',  # output directory
@@ -37,7 +39,7 @@ if __name__ == "__main__":
         warmup_steps=500,  # number of warmup steps for learning rate scheduler
         weight_decay=0.01,  # strength of weight decay
         logging_dir='./logs',  # directory for storing logs
-        logging_steps=200,  # log & save weights each logging_steps
+        logging_steps=50,  # log & save weights each logging_steps
     )
 
     # set the main code and the modules it uses to the same log-level according to the node
@@ -52,4 +54,5 @@ if __name__ == "__main__":
 
     trainer.train()
 
-    model.save_pretrained("./saved_models")
+    model.save_pretrained(args.saved_model_path)
+    tokenizer.save_pretrained(args.saved_model_path)
