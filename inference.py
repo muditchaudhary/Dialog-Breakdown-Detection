@@ -52,6 +52,7 @@ if __name__ == "__main__":
 
         outputs = model(**data)[0].softmax(1)
 
+
         output_json = {'dialogue-id': test_json["speaker-id"]}
         output_turns = []
 
