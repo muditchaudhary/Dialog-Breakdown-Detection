@@ -6,9 +6,9 @@ import urllib
 from torch import nn
 from transformers import BertPreTrainedModel, BertConfig, BertModel, AutoTokenizer, BertForSequenceClassification, AutoModelForSequenceClassification
 
-class BertEnsemble(nn.module):
-    def __init__(self, config, *args, **kwargs):
-        super().__init__(config)
+class BertEnsemble(nn.Module):
+    def __init__(self, *args, **kwargs):
+        super().__init__()
         task = 'offensive'
         MODEL = f"cardiffnlp/twitter-roberta-base-{task}"
 
@@ -22,14 +22,14 @@ class BertEnsemble(nn.module):
             csvreader = csv.reader(html, delimiter='\t')
         labels = [row[1] for row in csvreader if len(row) > 1]
 
-        self.dialog_cls_model = BertForSequenceClassification.from_pretrained(args.model_name, num_labels=3).to('cuda')
+        self.dialog_cls_model = BertForSequenceClassification.from_pretrained("./saved_models/bert_base_uncased_4epoch_5historycontext_sepCorrected2", num_labels=3).to('cuda')
         # model for AQ
 
-        self.offense_model = AutoModelForSequenceClassification.from_pretrained(MODEL)
+        self.offense_model = AutoModelForSequenceClassification.from_pretrained(MODEL).to('cuda')
         self.offense_model.save_pretrained(MODEL)
         # combine the 2 models into 1
         self.cls = nn.Linear(3+len(labels), 3)
-        self.init_weights()
+
 
 
     def forward(self, input):
