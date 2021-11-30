@@ -8,7 +8,7 @@ import numpy as np
 from torch.utils.data.sampler import SubsetRandomSampler
 import torch
 from datasets import load_metric
-#import wandb
+import wandb
 from IPython import embed
 logger = logging.getLogger(__name__)
 
@@ -36,8 +36,10 @@ if __name__ == "__main__":
     parser.add_argument('-c', dest='history_context', action='store', default = 0,type=int, required=False)
     args = parser.parse_args()
 
-    model_saved_name = "./saved_models/"+args.model +"_"+str(args.epochs)+"epochs_"+str(args.history_context)+"historyContext"
 
+
+    model_saved_name = "./saved_models/"+args.model +"_"+str(args.epochs)+"epochs_"+str(args.history_context)+"historyContext"
+    wandb.init(name = model_saved_name, config={"history_context": args.history_context})
     training_data_path = args.training_data_path
     model_name = args.model
 
@@ -69,14 +71,14 @@ if __name__ == "__main__":
         output_dir=model_saved_name,  # output directory
         num_train_epochs=args.epochs,  # total number of training epochs
         per_device_train_batch_size=16,  # batch size per device during training
-        per_device_eval_batch_size=64,
-        warmup_steps=500,  # number of warmup steps for learning rate scheduler
+        per_device_eval_batch_size=16,
+        warmup_steps=200,  # number of warmup steps for learning rate scheduler
         weight_decay=0.01,  # strength of weight decay
         logging_dir='./logs',  # directory for storing logs
-        logging_steps=10,  # log & save weights each logging_steps
+        logging_steps=50,  # log & save weights each logging_steps
         save_steps=100,
         evaluation_strategy="steps",
-        eval_steps=100,
+        eval_steps=50,
     )
 
     # set the main code and the modules it uses to the same log-level according to the node
